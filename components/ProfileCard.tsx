@@ -3,6 +3,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Github, Linkedin, ExternalLink } from "lucide-react";
 
 
+interface Experience {
+  company: string;
+  role: string;
+}
+
 // Destructure the prop, ignore all types for now unless we want to add an interface later on
 // Thank Peter for his pre-made components
 
@@ -47,12 +52,16 @@ export default function ProfileCard({ profile }: { profile: any }) {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {(profile.experiences ?? []).map((exp, i) => (
+        {(profile.experiences ?? []).map((exp: Experience, i: number) => (
           <div key={i} className="border-l-2 border-black group-hover:border-white pl-3 transition-colors">
             <p className="text-sm font-bold uppercase leading-tight">{exp.company}</p>
             <p className="text-xs opacity-70 italic">{exp.role}</p>
           </div>
         ))}
+
+        {(!profile.experiences || profile.experiences.length === 0) && (
+          <p className="text-[10px] uppercase opacity-30 italic">No history available</p>
+        )}
       </CardContent>
     </Card>
   );
