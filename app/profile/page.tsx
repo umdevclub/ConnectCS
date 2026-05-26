@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import ProfileCard from "@/components/ProfileCard";
 import EditProfileModal from "@/components/EditProfileModal";
 import { supabase } from "@/lib/supabase";
-import { ProfileDTO } from "@/lib/dto/profiles";
+import { ProfileDTO } from "@/lib/dto/profile";
 import { User } from "@supabase/supabase-js";
 
 const EMPTY_PROFILE: ProfileDTO = {
