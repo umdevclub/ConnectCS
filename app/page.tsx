@@ -162,11 +162,11 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredProfiles.map((profile, index) => (
+            {filteredProfiles.map((profile) => (
               <ProfileCard
                 key={
                   profile.id ??
-                  `${profile.name}-${profile.start_term}-${profile.grad_year ?? "present"}-${index}`
+                  `${profile.name}-${profile.start_term}-${profile.grad_year ?? "present"}`
                 }
                 profile={profile}
               />
