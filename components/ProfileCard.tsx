@@ -1,6 +1,6 @@
 // Thank Peter for his pre-made components
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Github, Linkedin, ExternalLink } from "lucide-react";
+import { Github, Linkedin, Pencil } from "lucide-react";
 
 
 interface Experience {
@@ -8,10 +8,25 @@ interface Experience {
   role: string;
 }
 
+interface Profile {
+  name?: string;
+  grad_year?: string;
+  linkedin?: string;
+  github?: string;
+  experiences?: Experience[];
+}
+
+interface ProfileCardProps {
+  profile: Profile | null;
+  editable?: boolean;        
+  onEdit?: () => void;
+}
+
 // Destructure the prop, ignore all types for now unless we want to add an interface later on
 // Thank Peter for his pre-made components
 
-export default function ProfileCard({ profile }: { profile: any }) {
+// This is resuable
+export default function ProfileCard({ profile, editable = false, onEdit }: ProfileCardProps) {
   if (!profile) return null;
 
   const isProfileEmpty = !profile.name;
