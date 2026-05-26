@@ -21,5 +21,7 @@ export const getSiteUrl = () => {
   return "http://localhost:3000";
 };
 
-export const getSiteUrlWithPath = (path: string) =>
-  new URL(path, getSiteUrl()).toString();
+export const getSiteUrlWithPath = (path: string) => {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return new URL(normalizedPath, getSiteUrl()).toString();
+};

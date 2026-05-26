@@ -39,12 +39,26 @@ export async function GET(request: NextRequest) {
     redirect(`/auth/error?${query.toString()}`);
   }
 
-  if (type && (token_hash || token)) {
-    const { error: otpError } = await supabase.auth.verifyOtp(
-      token_hash
-        ? { type, token_hash }
-        : { type, token: token! },
-    );
+  if (type && token_hash) {
+    const { error: otpError } = await supabase.auth.verifyOtp({
+      type,
+      token_hash,
+    });
+    if (!otpError) {
+      redirect(redirectTo);
+    }
+    const query = new URLSearchParams({ error: otpError.message });
+    if ("code" in otpError && otpError.code) {
+      query.set("error_code", otpError.code);
+    }
+    redirect(`/auth/error?${query.toString()}`);
+  }
+
+  if (type && token) {
+    const { error: otpError } = await supabase.auth.verifyOtp({
+      type,
+      token,
+    });
     if (!otpError) {
       redirect(redirectTo);
     }
