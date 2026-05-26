@@ -120,12 +120,6 @@ export default function Home() {
               Browse classmates, internships, and project experience.
             </p>
           </div>
-
-          {user && (
-            <Button asChild size="sm" variant="outline">
-              <Link href="/profile">Manage your profile</Link>
-            </Button>
-          )}
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
