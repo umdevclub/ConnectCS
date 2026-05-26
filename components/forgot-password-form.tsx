@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { getSiteUrlWithPath } from "@/lib/site-url";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,9 +32,14 @@ export function ForgotPasswordForm({
     setError(null);
 
     try {
+      const redirectUrl = new URL(
+        getSiteUrlWithPath("/auth/confirm"),
+      );
+      redirectUrl.searchParams.set("next", "/auth/update-password");
+
       // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/update-password`,
+        redirectTo: redirectUrl.toString(),
       });
       if (error) throw error;
       setSuccess(true);

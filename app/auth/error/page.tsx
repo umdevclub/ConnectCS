@@ -4,16 +4,24 @@ import { Suspense } from "react";
 async function ErrorContent({
   searchParams,
 }: {
-  searchParams: Promise<{ error: string }>;
+  searchParams: Promise<{
+    error?: string;
+    error_code?: string;
+    error_description?: string;
+  }>;
 }) {
   const params = await searchParams;
+  const details = params?.error_description ?? params?.error;
 
   return (
     <>
-      {params?.error ? (
-        <p className="text-sm text-muted-foreground">
-          Code error: {params.error}
-        </p>
+      {details ? (
+        <div className="space-y-2 text-sm text-muted-foreground">
+          {params?.error_code && (
+            <p>Code: {params.error_code}</p>
+          )}
+          <p>{details}</p>
+        </div>
       ) : (
         <p className="text-sm text-muted-foreground">
           An unspecified error occurred.
@@ -26,7 +34,11 @@ async function ErrorContent({
 export default function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ error: string }>;
+  searchParams: Promise<{
+    error?: string;
+    error_code?: string;
+    error_description?: string;
+  }>;
 }) {
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">

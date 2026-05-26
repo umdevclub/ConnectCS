@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { getSiteUrlWithPath } from "@/lib/site-url";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -40,11 +41,16 @@ export function SignUpForm({
     }
 
     try {
+      const redirectUrl = new URL(
+        getSiteUrlWithPath("/auth/confirm"),
+      );
+      redirectUrl.searchParams.set("next", "/");
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: redirectUrl.toString(),
         },
       });
       if (error) throw error;
