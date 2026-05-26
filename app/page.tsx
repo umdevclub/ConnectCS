@@ -50,6 +50,29 @@ export default function HomePage() {
   const [profiles, setProfiles] = useState<ProfileDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+"use client";
+
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import type { User } from "@supabase/supabase-js";
+
+import Navbar from "@/components/Navbar";
+import ProfileCard from "@/components/ProfileCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { ProfileDTO } from "@/lib/dto/profile";
+import { createClient } from "@/lib/supabase/client";
+
+type ProfileWithId = ProfileDTO & { id: string };
+
+export default function Home() {
+  const [supabase] = useState(() => createClient());
+  const [user, setUser] = useState<User | null>(null);
+  const [profiles, setProfiles] = useState<ProfileWithId[]>([]);
+  const [search, setSearch] = useState("");
+  const [loadingProfiles, setLoadingProfiles] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {

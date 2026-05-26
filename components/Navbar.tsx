@@ -10,13 +10,6 @@ export default function Navbar({ user }: { user: User | null }) {
   const pathname = usePathname();
   const supabase = createClient();
 
-  async function handleSignIn() {
-    const email = prompt("Enter your email:");
-    if (!email) return;
-    await supabase.auth.signInWithOtp({ email });
-    alert("Check your email for a magic link.");
-  }
-
   async function handleSignOut() {
     await supabase.auth.signOut();
     window.location.href = "/";
@@ -41,12 +34,20 @@ export default function Navbar({ user }: { user: User | null }) {
             </button>
           </>
         ) : (
-          <button
-            onClick={handleSignIn}
-            className="font-mono text-xs uppercase border border-black px-3 py-1 hover:bg-black hover:text-white transition-colors"
-          >
-            Sign In
-          </button>
+          <div className="flex gap-3 items-center">
+            <Link
+              href="/auth/login"
+              className="font-mono text-xs uppercase border border-black px-3 py-1 hover:bg-black hover:text-white transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/auth/sign-up"
+              className="font-mono text-xs uppercase bg-black text-white border border-black px-3 py-1 hover:bg-black/80 transition-colors"
+            >
+              Sign Up
+            </Link>
+          </div>
         )}
       </div>
     </nav>

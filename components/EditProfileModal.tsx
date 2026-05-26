@@ -120,7 +120,6 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
   async function addExperience() {
     if (!companyQuery.trim()) return;
 
-    // SUPABASE CALL 5: register new company if it doesn't exist yet
     if (canCreate) {
       await supabase
         .from("companies")
