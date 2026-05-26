@@ -2,7 +2,10 @@ export type UserID = string;
 
 export type TermSeason = "Fall" | "Winter" | "Summer";
 
-/** Non-negative integer value. */
+/**
+ * Non-negative integer value.
+ * Must be validated at runtime (TypeScript cannot enforce unsigned integers).
+ */
 export type UnsignedInt = number;
 
 export type Term = [season: TermSeason, year: UnsignedInt];
