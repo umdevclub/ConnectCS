@@ -48,23 +48,23 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.experience ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contacts ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Authenticated users can view companies"
+CREATE POLICY "Anyone can view companies"
 ON public.companies
 FOR SELECT
-TO authenticated
+TO public
 USING (true);
 
-CREATE POLICY "Authenticated users can view contact types"
+CREATE POLICY "Anyone can view contact types"
 ON public.contact_types
 FOR SELECT
-TO authenticated
+TO public
 USING (true);
 
-CREATE POLICY "Users can view own profile"
+CREATE POLICY "Anyone can view profiles"
 ON public.profiles
 FOR SELECT
-TO authenticated
-USING (auth.uid() = id);
+TO public
+USING (true);
 
 CREATE POLICY "Users can insert own profile"
 ON public.profiles
@@ -85,11 +85,11 @@ FOR DELETE
 TO authenticated
 USING (auth.uid() = id);
 
-CREATE POLICY "Users can view own experience"
+CREATE POLICY "Anyone can view experience"
 ON public.experience
 FOR SELECT
-TO authenticated
-USING (profile = auth.uid());
+TO public
+USING (true);
 
 CREATE POLICY "Users can insert own experience"
 ON public.experience
@@ -110,11 +110,11 @@ FOR DELETE
 TO authenticated
 USING (profile = auth.uid());
 
-CREATE POLICY "Users can view own contacts"
+CREATE POLICY "Anyone can view contacts"
 ON public.contacts
 FOR SELECT
-TO authenticated
-USING (profile = auth.uid());
+TO public
+USING (true);
 
 CREATE POLICY "Users can insert own contacts"
 ON public.contacts
