@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { Experience, Profile } from "@/types"
+import { ProfileDTO, ExperienceDTO } from "@/lib/dto/profiles";
 
 
 interface Props {
-    initial: Profile;
-    onSave: (data: Profile) => void;
+    initial: ProfileDTO;
+    onSave: (data: ProfileDTO) => void;
     onClose: () => void;
 }
 
@@ -15,7 +15,7 @@ interface Props {
 const COMPANIES = ["Ubisoft", "Bold Commerce", "SkipTheDishes", "AAFC", "Niche"];
 
 export default function EditProfileModal({ initial, onSave, onClose }: Props) {
-    const emptyProfile: Profile = {
+    const emptyProfile: ProfileDTO = {
         name: "",
         grad_year: "",
         linkedin: "",
@@ -23,13 +23,13 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
         experiences: [],
     };
 
-    const [form, setForm] = useState<Profile>(initial || emptyProfile);
+    const [form, setForm] = useState<ProfileDTO>(initial || emptyProfile);
 
     const [expInput, setExpInput] = useState({ company: "", role: "" });
     const [companyQuery, setCompanyQuery] = useState("");
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    function handleField(field: keyof Profile, value: string) {
+    function handleField(field: keyof ProfileDTO, value: string) {
         setForm((prev) => ({ ...prev, [field]: value }));
     }
 
