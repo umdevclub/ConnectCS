@@ -33,7 +33,6 @@ interface FormState {
   experiences: { company: string; role: string }[];
 }
 
-// ProfileDTO → flat form
 function profileToForm(p: ProfileDTO): FormState {
   const linkedin = p.contact.find(([t]) => t === "LinkedIn")?.[1] ?? "";
   const github = p.contact.find(([t]) => t === "GitHub")?.[1] ?? "";
@@ -53,18 +52,17 @@ function profileToForm(p: ProfileDTO): FormState {
   };
 }
 
-// Flat form → ProfileDTO
 function formToProfile(form: FormState, original: ProfileDTO): ProfileDTO {
   const contact: Contact[] = [];
   if (form.linkedin) contact.push(["LinkedIn", form.linkedin]);
   if (form.github) contact.push(["GitHub", form.github]);
 
   const experience: Experience[] = form.experiences.map(({ company, role }) => [
-    "Other",        // type — placeholder until form supports it
-    role,
+    "Other", 
+    role,       
     company,
-    new Date(),     // startDate — placeholder until form supports it
-    null,           // endDate
+    new Date(),     
+    null,           
   ]);
 
   const startTerm: Term = [form.startSeason, Number(form.startYear)];
@@ -91,7 +89,6 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const supabase = createClient();
 
-  // SUPABASE CALL 4: fetch existing companies for the dropdown
   useEffect(() => {
     async function fetchCompanies() {
       const { data } = await supabase.from("companies").select("name");
