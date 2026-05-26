@@ -14,8 +14,9 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function Home() {
   const supabase = useMemo(() => createClient(), []);
+  type ProfileWithId = ProfileDTO & { id: string };
   const [user, setUser] = useState<User | null>(null);
-  const [profiles, setProfiles] = useState<ProfileDTO[]>([]);
+  const [profiles, setProfiles] = useState<ProfileWithId[]>([]);
   const [search, setSearch] = useState("");
   const [loadingProfiles, setLoadingProfiles] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -51,7 +52,10 @@ export default function Home() {
         }
 
         const data = (await response.json()) as ProfileDTO[];
-        setProfiles(data);
+        const normalized = data.filter(
+          (profile): profile is ProfileWithId => Boolean(profile.id),
+        );
+        setProfiles(normalized);
       } catch {
         if (active) {
           setErrorMessage("Failed to load profiles.");
@@ -163,13 +167,7 @@ export default function Home() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredProfiles.map((profile) => (
-              <ProfileCard
-                key={
-                  profile.id ??
-                  `${profile.name}-${profile.start_term}-${profile.grad_year ?? "present"}`
-                }
-                profile={profile}
-              />
+              <ProfileCard key={profile.id} profile={profile} />
             ))}
           </div>
         )}
