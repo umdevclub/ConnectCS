@@ -29,7 +29,6 @@ function applyStoredOrder(source: ProfileDTO[]): ProfileDTO[] {
     const known = [...source].sort(
       (a, b) => order.indexOf(a.userId) - order.indexOf(b.userId)
     );
-    // Any new profiles not in the stored order get appended at the end
     const newProfiles = source.filter((p) => !order.includes(p.userId));
     if (newProfiles.length > 0) {
       const updated = [...order, ...newProfiles.map((p) => p.userId)];
@@ -70,7 +69,6 @@ export default function HomePage() {
     async function fetchProfiles() {
       setLoading(true);
 
-      // SUPABASE CALL 3: fetch all profiles for the grid
       const { data, error } = await supabase.from("profiles").select("*");
       const source: ProfileDTO[] = error ? [] : (data as ProfileDTO[]);
       setProfiles(applyStoredOrder(source));
