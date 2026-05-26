@@ -1,12 +1,33 @@
 // Thank Peter for his pre-made components
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Github, Linkedin, Pencil } from "lucide-react";
-import type { ProfileDTO } from "@/lib/dto/profiles";
+import type { ProfileDTO, Contact, Experience } from "@/lib/dto/profile";
 
 interface ProfileCardProps {
   profile: ProfileDTO | null;
   editable?: boolean;
   onEdit?: () => void;
+}
+
+// Helper methods for clean formatting
+function formatTerm(term: [string, number] | null | undefined, fallback: string): string {
+  if (!term) return fallback;
+  return `${term[0]} '${String(term[1]).slice(2)}`;
+}
+
+function formatTermRange(profile: ProfileDTO): string {
+  const start = formatTerm(profile.startTerm, "?");
+  const end = profile.endTerm ? formatTerm(profile.endTerm, "Present") : "Present";
+  return `${start} — ${end}`;
+}
+
+function getContact(contacts: Contact[], type: "LinkedIn" | "GitHub"): string | null {
+  const match = contacts.find(([t]) => t === type);
+  return match ? match[1] : null;
+}
+
+function formatExperience(exp: Experience): { company: string; role: string } {
+  return { company: exp[2], role: exp[1] };
 }
 
 // Destructure the prop, ignore all types for now unless we want to add an interface later on
