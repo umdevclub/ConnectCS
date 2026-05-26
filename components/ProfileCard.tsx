@@ -1,12 +1,33 @@
 // Thank Peter for his pre-made components
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Github, Linkedin, Pencil } from "lucide-react";
-import type { ProfileDTO } from "@/lib/dto/profiles";
+import type { ProfileDTO, Contact, Experience } from "@/lib/dto/profile";
 
 interface ProfileCardProps {
   profile: ProfileDTO | null;
   editable?: boolean;
   onEdit?: () => void;
+}
+
+// Helper methods for clean formatting
+function formatTerm(term: [string, number] | null | undefined, fallback: string): string {
+  if (!term) return fallback;
+  return `${term[0]} '${String(term[1]).slice(2)}`;
+}
+
+function formatTermRange(profile: ProfileDTO): string {
+  const start = formatTerm(profile.startTerm, "?");
+  const end = profile.endTerm ? formatTerm(profile.endTerm, "Present") : "Present";
+  return `${start} — ${end}`;
+}
+
+function getContact(contacts: Contact[], type: "LinkedIn" | "GitHub"): string | null {
+  const match = contacts.find(([t]) => t === type);
+  return match ? match[1] : null;
+}
+
+function formatExperience(exp: Experience): { company: string; role: string } {
+  return { company: exp[2], role: exp[1] };
 }
 
 // Destructure the prop, ignore all types for now unless we want to add an interface later on
@@ -17,6 +38,9 @@ export default function ProfileCard({ profile, editable = false, onEdit }: Profi
   if (!profile) return null;
 
   const isProfileEmpty = !profile.name;
+  const linkedin = getContact(profile.contact ?? [], "LinkedIn");
+  const github = getContact(profile.contact ?? [], "GitHub");
+  const termRange = formatTermRange(profile);
 
   return (
     <Card className="rounded-none border-2 border-black shadow-none hover:bg-black hover:text-white transition-colors group">
@@ -31,15 +55,15 @@ export default function ProfileCard({ profile, editable = false, onEdit }: Profi
           </CardTitle>
 
           <div className="flex gap-3 mt-2">
-            {profile?.linkedin ? (
-              <a href={profile.linkedin} target="_blank" rel="noreferrer">
+            {linkedin ? (
+              <a href={linkedin} target="_blank" rel="noreferrer">
                 <Linkedin size={16} className="cursor-pointer hover:opacity-50" />
               </a>
             ) : (
               <Linkedin size={16} className="opacity-20" />
             )}
-            {profile?.github ? (
-              <a href={profile.github} target="_blank" rel="noreferrer">
+            {github ? (
+              <a href={github} target="_blank" rel="noreferrer">
                 <Github size={16} className="cursor-pointer hover:opacity-50" />
               </a>
             ) : (
@@ -49,8 +73,8 @@ export default function ProfileCard({ profile, editable = false, onEdit }: Profi
         </div>
 
         <div className="flex flex-col items-end gap-2">
-          <span className="font-mono text-xs border border-black px-2 group-hover:border-white shrink-0">
-            {profile?.grad_year ?? "----"}
+          <span className="font-mono text-xs border border-black px-2 group-hover:border-white shrink-0 whitespace-nowrap">
+            {isProfileEmpty ? "---" : termRange}
           </span>
 
           {editable && (
@@ -66,14 +90,17 @@ export default function ProfileCard({ profile, editable = false, onEdit }: Profi
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {(profile.experiences ?? []).map((exp, i: number) => (
-          <div key={i} className="border-l-2 border-black group-hover:border-white pl-3 transition-colors">
-            <p className="text-sm font-bold uppercase leading-tight">{exp.company}</p>
-            <p className="text-xs opacity-70 italic">{exp.role}</p>
-          </div>
-        ))}
+        {(profile.experience ?? []).map((exp, i) => {
+          const { company, role } = formatExperience(exp);
+          return (
+            <div key={i} className="border-l-2 border-black group-hover:border-white pl-3 transition-colors">
+              <p className="text-sm font-bold uppercase leading-tight">{company}</p>
+              <p className="text-xs opacity-70 italic">{role}</p>
+            </div>
+          );
+        })}
 
-        {(!profile.experiences || profile.experiences.length === 0) && (
+        {(!profile.experience || profile.experience.length === 0) && (
           <p className="text-[10px] uppercase opacity-30 italic">No history available</p>
         )}
       </CardContent>
