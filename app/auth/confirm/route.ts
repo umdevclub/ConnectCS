@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
   const errorDescription = searchParams.get("error_description");
   const token_hash = searchParams.get("token_hash");
   const token = searchParams.get("token");
+  const email = searchParams.get("email"); // <-- 1. Extract email from search params
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next");
   const redirectTo =
@@ -55,10 +56,17 @@ export async function GET(request: NextRequest) {
   }
 
   if (type && token) {
+    // 2. Ensure email exists when verifying a raw token
+    if (!email) {
+      redirect(`/auth/error?error=Email is required for token verification`);
+    }
+
     const { error: otpError } = await supabase.auth.verifyOtp({
       type,
       token,
+      email, // <-- 3. Pass the email into the VerifyOtp object
     });
+
     if (!otpError) {
       redirect(redirectTo);
     }
