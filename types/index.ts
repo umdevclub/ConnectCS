@@ -1,9 +1,9 @@
-interface Experience {
+export interface Experience {
   company: string;
   role: string;
 }
 
-interface Profile {
+export interface Profile {
   name?: string;
   grad_year?: string;
   linkedin?: string;
