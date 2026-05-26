@@ -51,7 +51,7 @@ export default function Home() {
         }
 
         const data = (await response.json()) as ProfileDTO[];
-        setProfiles(data ?? []);
+        setProfiles(data);
       } catch {
         if (active) {
           setErrorMessage("Failed to load profiles.");
@@ -162,8 +162,14 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredProfiles.map((profile) => (
-              <ProfileCard key={profile.id ?? profile.name} profile={profile} />
+            {filteredProfiles.map((profile, index) => (
+              <ProfileCard
+                key={
+                  profile.id ??
+                  `${profile.name}-${profile.start_term}-${profile.grad_year ?? "present"}-${index}`
+                }
+                profile={profile}
+              />
             ))}
           </div>
         )}
