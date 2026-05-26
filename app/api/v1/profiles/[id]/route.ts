@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { unstable_cache, revalidateTag } from "next/cache";
 import { createAnonClient, buildContacts } from "@/lib/api/helpers";
-import type { ProfileDTO } from "@/lib/dto/profiles";
+import type { ProfileDTO } from "@/lib/dto/profile";
 
 async function fetchProfile(id: string): Promise<ProfileDTO | null> {
   const supabase = createAnonClient();

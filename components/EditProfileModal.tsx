@@ -1,22 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { ProfileDTO, ExperienceDTO } from "@/lib/dto/profiles";
+import { ProfileDTO } from "@/lib/dto/profile";
 
 
 interface Props {
     initial: ProfileDTO;
-    onSave: (data: ProfileDTO) => void;
+    onSave: (data: ProfileDTO) => Promise<void> | void;
     onClose: () => void;
 }
 
-// TODO: Replace with a supabase call to companies table
 const COMPANIES = ["Ubisoft", "Bold Commerce", "SkipTheDishes", "AAFC", "Niche"];
 
 export default function EditProfileModal({ initial, onSave, onClose }: Props) {
     const emptyProfile: ProfileDTO = {
+        id: initial?.id,
         name: "",
+        start_term: "",
         grad_year: "",
         linkedin: "",
         github: "",
@@ -24,17 +25,50 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
     };
 
     const [form, setForm] = useState<ProfileDTO>(initial || emptyProfile);
+    const [companies, setCompanies] = useState<string[]>(COMPANIES);
 
     const [expInput, setExpInput] = useState({ company: "", role: "" });
     const [companyQuery, setCompanyQuery] = useState("");
     const [showSuggestions, setShowSuggestions] = useState(false);
 
-    function handleField(field: keyof ProfileDTO, value: string) {
+    useEffect(() => {
+        let active = true;
+
+        async function loadCompanies() {
+            try {
+                const response = await fetch("/api/v1/companies");
+                if (!response.ok) return;
+                const data = await response.json();
+                if (active && Array.isArray(data)) {
+                    setCompanies(data);
+                }
+            } catch {
+                // Fallback to static list
+            }
+        }
+
+        loadCompanies();
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    type EditableField = "name" | "start_term" | "grad_year" | "linkedin" | "github";
+
+    function handleField(field: EditableField, value: string) {
         setForm((prev) => ({ ...prev, [field]: value }));
     }
 
-    const suggestions = companyQuery.length > 0 ? COMPANIES.filter((c) => c.toLowerCase().includes(companyQuery.toLowerCase())) : [];
-    const canCreate = companyQuery.length > 0 && !COMPANIES.some((c) => c.toLowerCase() === companyQuery.toLowerCase());
+    const suggestions =
+        companyQuery.length > 0
+            ? companies.filter((c) =>
+                  c.toLowerCase().includes(companyQuery.toLowerCase()),
+              )
+            : [];
+    const canCreate =
+        companyQuery.length > 0 &&
+        !companies.some((c) => c.toLowerCase() === companyQuery.toLowerCase());
 
     function selectCompany(name: string) {
         setExpInput((prev) => ({ ...prev, company: name }));
@@ -61,7 +95,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
 
     function handleSave() {
         // TODO: supabase call goes here to update or insert profile
-        onSave(form);
+        void onSave(form);
         onClose();
     }
 
@@ -85,6 +119,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
                     <div className="space-y-4">
                         <p className="font-mono text-[10px] uppercase opacity-50 tracking-widest">Info</p>
                         <Field label="Name" value={form.name ?? ""} onChange={(v) => handleField("name", v)} />
+                        <Field label="Start Term" value={form.start_term ?? ""} onChange={(v) => handleField("start_term", v)} />
                         <Field label="Grad Year" value={form.grad_year ?? ""} onChange={(v) => handleField("grad_year", v)} />
                         <Field label="LinkedIn URL" value={form.linkedin ?? ""} onChange={(v) => handleField("linkedin", v)} />
                         <Field label="GitHub URL" value={form.github ?? ""} onChange={(v) => handleField("github", v)} />
@@ -137,7 +172,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
                                                 className="w-full text-left px-3 py-2 text-sm uppercase font-bold opacity-50 hover:opacity-100 hover:bg-black hover:text-white"
                                                 onClick={() => selectCompany(companyQuery)}
                                             >
-                                                + Add "{companyQuery}"
+                                                + Add &quot;{companyQuery}&quot;
                                             </button>
                                         )}
                                     </div>
