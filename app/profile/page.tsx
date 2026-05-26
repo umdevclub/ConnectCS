@@ -51,8 +51,6 @@ export default function ProfilePage() {
     }
 
     async function fetchProfile() {
-      // SUPABASE CALL 1: fetch this user's own profile
-      // NOTE: if your Supabase column is "id" instead of "userId", change .eq("userId", ...) to .eq("id", ...)
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
@@ -67,8 +65,6 @@ export default function ProfilePage() {
   }, [user]);
 
   async function handleSave(data: ProfileDTO) {
-    // SUPABASE CALL 2: upsert profile on save
-    // NOTE: same column name caveat as above applies here
     const { error } = await supabase.from("profiles").upsert(data);
     if (!error) setProfile(data);
   }
