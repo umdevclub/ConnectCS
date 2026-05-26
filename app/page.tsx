@@ -12,9 +12,10 @@ import { Label } from "@/components/ui/label";
 import type { ProfileDTO } from "@/lib/dto/profile";
 import { createClient } from "@/lib/supabase/client";
 
+type ProfileWithId = ProfileDTO & { id: string };
+
 export default function Home() {
   const supabase = useMemo(() => createClient(), []);
-  type ProfileWithId = ProfileDTO & { id: string };
   const [user, setUser] = useState<User | null>(null);
   const [profiles, setProfiles] = useState<ProfileWithId[]>([]);
   const [search, setSearch] = useState("");
@@ -51,11 +52,8 @@ export default function Home() {
           return;
         }
 
-        const data = (await response.json()) as ProfileDTO[];
-        const normalized = data.filter(
-          (profile): profile is ProfileWithId => Boolean(profile.id),
-        );
-        setProfiles(normalized);
+        const data = (await response.json()) as ProfileWithId[];
+        setProfiles(data);
       } catch {
         if (active) {
           setErrorMessage("Failed to load profiles.");
@@ -82,7 +80,8 @@ export default function Home() {
 
     return profiles.filter((profile) => {
       const experienceText = (profile.experiences ?? [])
-        .map((exp) => `${exp.company} ${exp.role}`)
+        .map((exp) => [exp.company, exp.role].filter(Boolean).join(" "))
+        .filter(Boolean)
         .join(" ");
       const haystack = [
         profile.name,
