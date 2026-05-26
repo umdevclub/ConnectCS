@@ -1,4 +1,3 @@
-// app/profile/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -185,12 +184,14 @@ export default function ProfilePage() {
               )}
             </div>
 
-            <div className="w-full sm:w-72">
-              <ProfileCard
-                profile={profile}
-                editable={hasProfile}
-                onEdit={() => setModalOpen(true)}
-              />
+            <div className="flex justify-center">
+              <div className="w-full sm:w-72 lg:w-96">
+                <ProfileCard
+                  profile={profile}
+                  editable={hasProfile}
+                  onEdit={() => setModalOpen(true)}
+                />
+              </div>
             </div>
 
             {savingProfile && (

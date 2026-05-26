@@ -120,12 +120,6 @@ export default function Home() {
               Browse classmates, internships, and project experience.
             </p>
           </div>
-
-          {user && (
-            <Button asChild size="sm" variant="outline">
-              <Link href="/profile">Manage your profile</Link>
-            </Button>
-          )}
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -167,7 +161,7 @@ export default function Home() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
             {filteredProfiles.map((profile) => (
               <ProfileCard key={profile.id} profile={profile} />
             ))}
