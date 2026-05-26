@@ -150,7 +150,7 @@ export default function ProfilePage() {
   const hasProfile = Boolean(profile.name);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-background">
       <Navbar user={user} />
 
       <div className="p-4 sm:p-8">
@@ -178,7 +178,7 @@ export default function ProfilePage() {
               {!hasProfile && (
                 <button
                   onClick={() => setModalOpen(true)}
-                  className="font-mono text-xs uppercase border-2 border-black px-3 py-1 hover:bg-black hover:text-white transition-colors"
+                  className="font-mono text-xs uppercase border-2 border-foreground px-3 py-1 hover:bg-foreground hover:text-background transition-colors"
                 >
                   Create Profile
                 </button>
