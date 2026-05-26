@@ -42,6 +42,16 @@ CREATE TABLE public.contacts (
   PRIMARY KEY (profile, contact_type, contact)
 );
 
+INSERT INTO public.contact_types (name)
+VALUES
+  ('Website'),
+  ('Email'),
+  ('LinkedIn'),
+  ('GitHub'),
+  ('X'),
+  ('Instagram'),
+  ('Other');
+
 ALTER TABLE public.companies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contact_types ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -53,6 +63,12 @@ ON public.companies
 FOR SELECT
 TO public
 USING (true);
+
+CREATE POLICY "Authenticated users can insert companies"
+ON public.companies
+FOR INSERT
+TO authenticated
+WITH CHECK (true);
 
 CREATE POLICY "Anyone can view contact types"
 ON public.contact_types
