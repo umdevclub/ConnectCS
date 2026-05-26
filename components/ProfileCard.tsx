@@ -30,7 +30,7 @@ export default function ProfileCard({ profile, editable = false, onEdit }: Profi
   const termRange = formatTermRange(profile);
 
   return (
-    <Card className="rounded-none border-2 border-black shadow-none hover:bg-black hover:text-white transition-colors group">
+    <Card className="w-full rounded-none border-2 border-black shadow-none hover:bg-black hover:text-white transition-colors group">
       <CardHeader className="flex flex-row justify-between items-start pb-2">
         <div>
           <CardTitle className="font-bold text-xl uppercase tracking-tighter">
