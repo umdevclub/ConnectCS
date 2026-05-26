@@ -18,7 +18,7 @@ interface Profile {
 
 interface ProfileCardProps {
   profile: Profile | null;
-  editable?: boolean;        
+  editable?: boolean;
   onEdit?: () => void;
 }
 
@@ -37,7 +37,7 @@ export default function ProfileCard({ profile, editable = false, onEdit }: Profi
         <div>
           <CardTitle className="font-bold text-xl uppercase tracking-tighter">
             {isProfileEmpty ? (
-              <span className="opacity-30">First Last</span>
+              <span className="opacity-30">[NEW_ENTRY]</span>
             ) : (
               profile.name
             )}
@@ -59,11 +59,23 @@ export default function ProfileCard({ profile, editable = false, onEdit }: Profi
               <Github size={16} className="opacity-20" />
             )}
           </div>
-
         </div>
-        <span className="font-mono text-xs border border-black px-2 group-hover:border-white">
-          {profile?.grad_year ?? "----"}
-        </span>
+
+        <div className="flex flex-col items-end gap-2">
+          <span className="font-mono text-xs border border-black px-2 group-hover:border-white shrink-0">
+            {profile?.grad_year ?? "----"}
+          </span>
+
+          {editable && (
+            <button
+              onClick={onEdit}
+              className="p-1 border border-transparent hover:border-black group-hover:hover:border-white transition-all"
+              aria-label="Edit profile"
+            >
+              <Pencil size={14} />
+            </button>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-4">
