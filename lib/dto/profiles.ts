@@ -4,7 +4,9 @@ export interface ExperienceDTO {
 }
 
 export interface ProfileDTO {
+  id?: string;
   name?: string;
+  start_term?: string;
   grad_year?: string;
   linkedin?: string;
   github?: string;
