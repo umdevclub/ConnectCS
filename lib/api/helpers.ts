@@ -1,5 +1,5 @@
 import { createClient as createSupabase } from "@supabase/supabase-js";
-import type { ProfileDTO } from "@/lib/dto/profiles";
+import type { ProfileDTO } from "@/lib/dto/profile";
 
 /** Anonymous Supabase client for public (unauthenticated) reads. */
 export function createAnonClient() {
