@@ -2,9 +2,10 @@ export type UserID = string;
 
 export type TermSeason = "Fall" | "Winter" | "Summer";
 
+/** Non-negative integer value. */
 export type UnsignedInt = number;
 
-export type Term = [TermSeason, UnsignedInt];
+export type Term = [season: TermSeason, year: UnsignedInt];
 
 export type ContactType =
   | "Website"
@@ -15,7 +16,7 @@ export type ContactType =
   | "Instagram"
   | "Other";
 
-export type Contact = [ContactType, string];
+export type Contact = [type: ContactType, value: string];
 
 export type ExperienceType =
   | "Permanent Full-Time"
@@ -31,11 +32,11 @@ export type ExperienceType =
 export type DateTime = Date;
 
 export type Experience = [
-  ExperienceType,
-  string,
-  string,
-  DateTime,
-  DateTime | null,
+  type: ExperienceType,
+  roleName: string,
+  company: string,
+  startDate: DateTime,
+  endDate: DateTime | null,
 ];
 
 export interface ProfileDTO {
