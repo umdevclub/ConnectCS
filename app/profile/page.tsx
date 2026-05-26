@@ -92,14 +92,14 @@ export default function ProfilePage() {
   }, [user]);
 
   async function handleSave(data: ProfileDTO) {
-    if (!user) return;
+    if (!user) return false;
 
     const name = data.name.trim();
     const startTerm = data.start_term.trim();
 
     if (!name || !startTerm) {
       setErrorMessage("Name and start term are required.");
-      return;
+      return false;
     }
 
     setSavingProfile(true);
@@ -128,7 +128,7 @@ export default function ProfilePage() {
       if (!response.ok) {
         const { error } = (await response.json()) as { error?: string };
         setErrorMessage(error ?? "Failed to save profile.");
-        return;
+        return false;
       }
 
       const saved = (await response.json()) as ProfileDTO;
@@ -138,14 +138,16 @@ export default function ProfilePage() {
         id: saved.id ?? user.id,
         experiences: saved.experiences ?? [],
       });
+      return true;
     } catch {
       setErrorMessage("Failed to save profile.");
+      return false;
     } finally {
       setSavingProfile(false);
     }
   }
 
-  const hasProfile = Boolean(profile.id);
+  const hasProfile = Boolean(profile.name);
 
   return (
     <main className="min-h-screen bg-white">

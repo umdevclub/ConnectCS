@@ -7,7 +7,7 @@ import { ProfileDTO } from "@/lib/dto/profile";
 
 interface Props {
     initial: ProfileDTO;
-    onSave: (data: ProfileDTO) => Promise<void> | void;
+    onSave: (data: ProfileDTO) => Promise<boolean> | boolean;
     onClose: () => void;
 }
 
@@ -30,6 +30,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
     const [expInput, setExpInput] = useState({ company: "", role: "" });
     const [companyQuery, setCompanyQuery] = useState("");
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
 
     useEffect(() => {
         let active = true;
@@ -93,10 +94,20 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
         }));
     }
 
-    function handleSave() {
-        // TODO: supabase call goes here to update or insert profile
-        void onSave(form);
-        onClose();
+    async function handleSave() {
+        setSaveError(null);
+
+        try {
+            const saved = await onSave(form);
+            if (saved) {
+                onClose();
+                return;
+            }
+        } catch {
+            // Fall through to error state
+        }
+
+        setSaveError("Failed to save profile.");
     }
 
     return (
@@ -194,6 +205,12 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
                             </button>
                         </div>
                     </div>
+
+                    {saveError && (
+                        <p className="text-[10px] uppercase text-red-600 font-mono">
+                            {saveError}
+                        </p>
+                    )}
 
                     {/* Save */}
                     <button
