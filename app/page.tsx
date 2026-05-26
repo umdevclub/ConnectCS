@@ -15,7 +15,7 @@ import { createClient } from "@/lib/supabase/client";
 type ProfileWithId = ProfileDTO & { id: string };
 
 export default function Home() {
-  const supabase = useMemo(() => createClient(), []);
+  const [supabase] = useState(() => createClient());
   const [user, setUser] = useState<User | null>(null);
   const [profiles, setProfiles] = useState<ProfileWithId[]>([]);
   const [search, setSearch] = useState("");
@@ -52,8 +52,11 @@ export default function Home() {
           return;
         }
 
-        const data = (await response.json()) as ProfileWithId[];
-        setProfiles(data);
+        const data = (await response.json()) as ProfileDTO[];
+        const normalized = data.filter(
+          (profile): profile is ProfileWithId => Boolean(profile.id),
+        );
+        setProfiles(normalized);
       } catch {
         if (active) {
           setErrorMessage("Failed to load profiles.");
