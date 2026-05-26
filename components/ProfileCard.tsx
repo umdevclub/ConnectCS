@@ -1,23 +1,10 @@
 // Thank Peter for his pre-made components
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Github, Linkedin, Pencil } from "lucide-react";
-
-
-interface Experience {
-  company: string;
-  role: string;
-}
-
-interface Profile {
-  name?: string;
-  grad_year?: string;
-  linkedin?: string;
-  github?: string;
-  experiences?: Experience[];
-}
+import type { ProfileDTO } from "@/lib/dto/profiles";
 
 interface ProfileCardProps {
-  profile: Profile | null;
+  profile: ProfileDTO | null;
   editable?: boolean;
   onEdit?: () => void;
 }
@@ -79,7 +66,7 @@ export default function ProfileCard({ profile, editable = false, onEdit }: Profi
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {(profile.experiences ?? []).map((exp: Experience, i: number) => (
+        {(profile.experiences ?? []).map((exp, i: number) => (
           <div key={i} className="border-l-2 border-black group-hover:border-white pl-3 transition-colors">
             <p className="text-sm font-bold uppercase leading-tight">{exp.company}</p>
             <p className="text-xs opacity-70 italic">{exp.role}</p>
