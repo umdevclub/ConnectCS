@@ -1,3 +1,55 @@
+// app/page.tsx
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
+import { createClient } from "@/lib/supabase/client";
+import Navbar from "@/components/Navbar";
+import ProfileCard from "@/components/ProfileCard";
+import { Search } from "lucide-react";
+import type { ProfileDTO } from "@/lib/dto/profile";
+import type { User } from "@supabase/supabase-js";
+
+const supabase = createClient();
+const SESSION_KEY = "connectcs-profile-order";
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function applyStoredOrder(source: ProfileDTO[]): ProfileDTO[] {
+  const stored = sessionStorage.getItem(SESSION_KEY);
+
+  if (stored) {
+    const order: string[] = JSON.parse(stored);
+    const known = [...source].sort(
+      (a, b) => order.indexOf(a.userId) - order.indexOf(b.userId)
+    );
+    const newProfiles = source.filter((p) => !order.includes(p.userId));
+    if (newProfiles.length > 0) {
+      const updated = [...order, ...newProfiles.map((p) => p.userId)];
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated));
+    }
+    return [...known, ...newProfiles];
+  }
+
+  const shuffled = shuffle(source);
+  sessionStorage.setItem(
+    SESSION_KEY,
+    JSON.stringify(shuffled.map((p) => p.userId))
+  );
+  return shuffled;
+}
+
+export default function HomePage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [profiles, setProfiles] = useState<ProfileDTO[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
 "use client";
 
 import Link from "next/link";
@@ -34,146 +86,72 @@ export default function Home() {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase]);
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadProfiles() {
-      setLoadingProfiles(true);
-      setErrorMessage(null);
-
-      try {
-        const response = await fetch("/api/v1/profiles");
-        if (!active) return;
-
-        if (!response.ok) {
-          setErrorMessage("Failed to load profiles.");
-          return;
-        }
-
-        const data = (await response.json()) as ProfileDTO[];
-        const normalized = data.filter(
-          (profile): profile is ProfileWithId => Boolean(profile.id),
-        );
-        setProfiles(normalized);
-      } catch {
-        if (active) {
-          setErrorMessage("Failed to load profiles.");
-        }
-      } finally {
-        if (active) {
-          setLoadingProfiles(false);
-        }
-      }
-    }
-
-    loadProfiles();
-
-    return () => {
-      active = false;
-    };
   }, []);
 
-  const filteredProfiles = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    if (!term) {
-      return profiles;
+  useEffect(() => {
+    async function fetchProfiles() {
+      setLoading(true);
+
+      const { data, error } = await supabase.from("profiles").select("*");
+      const source: ProfileDTO[] = error ? [] : (data as ProfileDTO[]);
+      setProfiles(applyStoredOrder(source));
+      setLoading(false);
     }
 
-    return profiles.filter((profile) => {
-      const experienceText = (profile.experiences ?? [])
-        .map((exp) => [exp.company, exp.role].filter(Boolean).join(" "))
-        .filter(Boolean)
-        .join(" ");
-      const haystack = [
-        profile.name,
-        profile.start_term,
-        profile.grad_year,
-        experienceText,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(term);
-    });
-  }, [profiles, search]);
+    fetchProfiles();
+  }, []);
 
-  const profileCountLabel = loadingProfiles
-    ? "Loading profiles..."
-    : `${filteredProfiles.length} profile${filteredProfiles.length === 1 ? "" : "s"}`;
+  const filtered = useMemo(() => {
+    if (!query.trim()) return profiles;
+    return profiles.filter((p) =>
+      p.name?.toLowerCase().includes(query.toLowerCase())
+    );
+  }, [profiles, query]);
 
   return (
     <main className="min-h-screen bg-white">
       <Navbar user={user} />
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 sm:p-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-2">
-            <p className="font-mono text-[10px] uppercase opacity-40">
-              ConnectCS directory
-            </p>
-            <h1 className="text-3xl font-bold uppercase tracking-tight">
-              Student Profiles
-            </h1>
-            <p className="text-sm text-black/60">
-              Browse classmates, internships, and project experience.
-            </p>
-          </div>
-
-          {user && (
-            <Button asChild size="sm" variant="outline">
-              <Link href="/profile">Manage your profile</Link>
-            </Button>
+      <div className="p-4 sm:p-8 space-y-6">
+        <div className="flex items-center border-2 border-black px-3 py-2 gap-2">
+          <Search size={14} className="opacity-30 shrink-0" />
+          <input
+            className="flex-1 text-sm outline-none bg-transparent font-mono uppercase placeholder:opacity-30 placeholder:normal-case placeholder:font-sans"
+            placeholder="Search by name..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="opacity-30 hover:opacity-100 transition-opacity font-mono text-xs"
+            >
+              ✕
+            </button>
           )}
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="w-full sm:max-w-md">
-            <Label
-              htmlFor="profile-search"
-              className="font-mono text-[10px] uppercase opacity-40"
-            >
-              Search profiles
-            </Label>
-            <Input
-              id="profile-search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search by name, company, or role"
-            />
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="border-2 border-black h-48 animate-pulse bg-black/5"
+              />
+            ))}
           </div>
-          <p className="font-mono text-[10px] uppercase opacity-40">
-            {profileCountLabel}
+        ) : filtered.length === 0 ? (
+          <p className="font-mono text-xs uppercase opacity-30 text-center pt-8">
+            {query ? "No profiles match." : "No profiles yet."}
           </p>
-        </div>
-
-        {errorMessage && (
-          <p className="font-mono text-[10px] uppercase text-red-600">
-            {errorMessage}
-          </p>
-        )}
-
-        {loadingProfiles ? (
-          <div className="flex min-h-[40vh] items-center justify-center">
-            <p className="font-mono text-xs uppercase opacity-30">
-              Loading profiles...
-            </p>
-          </div>
-        ) : filteredProfiles.length === 0 ? (
-          <div className="flex min-h-[40vh] items-center justify-center">
-            <p className="font-mono text-xs uppercase opacity-30">
-              No profiles match your search
-            </p>
-          </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredProfiles.map((profile) => (
-              <ProfileCard key={profile.id} profile={profile} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {filtered.map((profile) => (
+              <ProfileCard key={profile.userId} profile={profile} />
             ))}
           </div>
         )}
-      </section>
+      </div>
     </main>
   );
 }
