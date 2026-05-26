@@ -116,10 +116,10 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
             onClick={onClose}
         >
             <div
-                className="bg-white border-2 border-black w-full max-w-md max-h-[90vh] overflow-y-auto"
+                className="bg-background border-2 border-foreground w-full max-w-md max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="flex justify-between items-center border-b-2 border-black px-6 py-4">
+                <div className="flex justify-between items-center border-b-2 border-foreground px-6 py-4">
                     <p className="font-mono text-xs uppercase tracking-widest">Edit Profile</p>
                     <button onClick={onClose} aria-label="Close">
                         <X size={16} />
@@ -139,7 +139,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
                     <div className="space-y-3">
                         <p className="font-mono text-[10px] uppercase opacity-50 tracking-widest">Experience</p>
                         {(form.experiences ?? []).map((exp, i) => (
-                            <div key={i} className="flex justify-between items-center border-l-2 border-black pl-3">
+                            <div key={i} className="flex justify-between items-center border-l-2 border-foreground pl-3">
                                 <div>
                                     <p className="text-sm font-bold uppercase">{exp.company}</p>
                                     <p className="text-xs opacity-70 italic">{exp.role}</p>
@@ -156,7 +156,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
                         <div className="space-y-2">
                             <div className="relative">
                                 <input
-                                    className="w-full border-b border-black text-sm font-bold uppercase outline-none bg-transparent py-1 placeholder:opacity-30 placeholder:font-normal placeholder:normal-case"
+                                    className="w-full border-b border-foreground text-sm font-bold uppercase outline-none bg-transparent py-1 placeholder:opacity-30 placeholder:font-normal placeholder:normal-case"
                                     placeholder="Company"
                                     value={companyQuery}
                                     onChange={(e) => {
@@ -168,11 +168,11 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
                                 />
 
                                 {showSuggestions && (suggestions.length > 0 || canCreate) && (
-                                    <div className="absolute top-full left-0 right-0 border-2 border-black bg-white z-10">
+                                    <div className="absolute top-full left-0 right-0 border-2 border-foreground bg-background z-10">
                                         {suggestions.map((c) => (
                                             <button
                                                 key={c}
-                                                className="w-full text-left px-3 py-2 text-sm uppercase font-bold hover:bg-black hover:text-white"
+                                                className="w-full text-left px-3 py-2 text-sm uppercase font-bold hover:bg-foreground hover:text-background"
                                                 onClick={() => selectCompany(c)}
                                             >
                                                 {c}
@@ -180,7 +180,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
                                         ))}
                                         {canCreate && (
                                             <button
-                                                className="w-full text-left px-3 py-2 text-sm uppercase font-bold opacity-50 hover:opacity-100 hover:bg-black hover:text-white"
+                                                className="w-full text-left px-3 py-2 text-sm uppercase font-bold opacity-50 hover:opacity-100 hover:bg-foreground hover:text-background"
                                                 onClick={() => selectCompany(companyQuery)}
                                             >
                                                 + Add &quot;{companyQuery}&quot;
@@ -191,7 +191,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
                             </div>
 
                             <input
-                                className="w-full border-b border-black text-xs outline-none bg-transparent py-1 placeholder:opacity-30"
+                                className="w-full border-b border-foreground text-xs outline-none bg-transparent py-1 placeholder:opacity-30"
                                 placeholder="Role"
                                 value={expInput.role}
                                 onChange={(e) => setExpInput((p) => ({ ...p, role: e.target.value }))}
@@ -199,7 +199,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
 
                             <button
                                 onClick={addExperience}
-                                className="font-mono text-[10px] uppercase border border-black px-3 py-1 hover:bg-black hover:text-white transition-colors"
+                                className="font-mono text-[10px] uppercase border border-foreground px-3 py-1 hover:bg-foreground hover:text-background transition-colors"
                             >
                                 Add Experience
                             </button>
@@ -215,7 +215,7 @@ export default function EditProfileModal({ initial, onSave, onClose }: Props) {
                     {/* Save */}
                     <button
                         onClick={handleSave}
-                        className="w-full border-2 border-black py-2 font-bold uppercase text-sm hover:bg-black hover:text-white transition-colors"
+                        className="w-full border-2 border-foreground py-2 font-bold uppercase text-sm hover:bg-foreground hover:text-background transition-colors"
                     >
                         Save
                     </button>
@@ -230,7 +230,7 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
         <div className="flex flex-col gap-1">
             <label className="font-mono text-[10px] uppercase opacity-50">{label}</label>
             <input
-                className="border-b border-black text-sm outline-none bg-transparent py-1"
+                className="border-b border-foreground text-sm outline-none bg-transparent py-1"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
             />

@@ -104,7 +104,7 @@ export default function Home() {
     : `${filteredProfiles.length} profile${filteredProfiles.length === 1 ? "" : "s"}`;
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-background">
       <Navbar user={user} />
 
       <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 sm:p-8">
@@ -116,7 +116,7 @@ export default function Home() {
             <h1 className="text-3xl font-bold uppercase tracking-tight">
               Student Profiles
             </h1>
-            <p className="text-sm text-black/60">
+            <p className="text-sm text-foreground/60">
               Browse classmates, internships, and project experience.
             </p>
           </div>
